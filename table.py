@@ -18,6 +18,7 @@ class Table:
         self.turn = 1
 
     def set_up_code(self, player, code):
+        print(player)
         self.codes_cnt += 1
         self.codes[player['nick']] = code
 
@@ -34,44 +35,124 @@ class Table:
         if len(self.answers[player['nick']]) < self.turn:
             self.answers[player['nick']].append(code)
 
-        if self.answers[self.player_1['nick']] == self.answers[self.player_2['nick']] == self.turn:
+        if len(self.answers[self.player_1['nick']]) == len(self.answers[self.player_2['nick']]) == self.turn:
             self.compare_answer_with_code()
 
     def compare_answer_with_code(self):
-        blacks = len(set(self.codes[self.player_1['nick']]) & set(self.answers[self.player_2['nick']]))
+        blacks_1 = 0
+        for i in range(4):
+            if self.codes[self.player_1['nick']][i] == \
+                    self.answers[self.player_2['nick']][self.turn - 1][i]:
+                blacks_1 += 1
 
-        response_value = []
+        blacks_2 = 0
+        for i in range(4):
+            if self.codes[self.player_1['nick']][i] == \
+                    self.answers[self.player_2['nick']][self.turn - 1][i]:
+                blacks_2 += 1
+
+        response_value_1 = []
 
         for i in range(4):
-            if i < blacks:
-                response_value.append('black')
+            if i < blacks_1:
+                response_value_1.append('black')
             else:
-                response_value.append('white')
+                response_value_1.append('white')
 
-        response = {
-            'type': 'table_update',
-            'value': response_value
-        }
-
-        self.player_2['responses'].append(response)
-
-        blacks = len(set(self.codes[self.player_2['nick']]) & set(self.answers[self.player_1['nick']]))
-
-        response_value = []
+        response_value_2 = []
 
         for i in range(4):
-            if i < blacks:
-                response_value.append('black')
+            if i < blacks_2:
+                response_value_2.append('black')
             else:
-                response_value.append('white')
+                response_value_2.append('white')
 
-        response = {
-            'type': 'table_update',
-            'value': response_value
-        }
+        if blacks_1 == 4 or blacks_2 == 4:
+            if blacks_1 == 4 and blacks_2 == 4:
+                response_1 = {
+                    'type': 'game_over',
+                    'value': {
+                        'turn': self.turn + 1,
+                        'result': response_value_1,
+                        'outcome': 'withdraw'
+                    }
+                }
 
-        self.player_1['responses'].append(response)
+                response_2 = response_1
+            elif blacks_1 == 4:
+                response_1 = {
+                    'type': 'game_over',
+                    'value': {
+                        'turn': self.turn + 1,
+                        'result': response_value_1,
+                        'outcome': 'winner'
+                    }
+                }
+
+                response_2 = {
+                    'type': 'game_over',
+                    'value': {
+                        'turn': self.turn + 1,
+                        'result': response_value_1,
+                        'outcome': 'loser'
+                    }
+                }
+            else:
+                response_1 = {
+                    'type': 'game_over',
+                    'value': {
+                        'turn': self.turn + 1,
+                        'result': response_value_1,
+                        'outcome': 'loser'
+                    }
+                }
+
+                response_2 = {
+                    'type': 'game_over',
+                    'value': {
+                        'turn': self.turn + 1,
+                        'result': response_value_1,
+                        'outcome': 'winner'
+                    }
+                }
+        elif self.turn > 5:
+            response_1 = {
+                'type': 'game_over',
+                'value': {
+                    'turn': self.turn + 1,
+                    'result': response_value_1,
+                    'outcome': 'loser'
+                }
+            }
+
+            response_2 = {
+                'type': 'game_over',
+                'value': {
+                    'turn': self.turn + 1,
+                    'result': response_value_1,
+                    'outcome': 'loser'
+                }
+            }
+        else:
+            response_1 = {
+                'type': 'table_update',
+                'value': {
+                    'turn': self.turn + 1,
+                    'result': response_value_1,
+                    'opponent': self.answers[self.player_1['nick']][self.turn - 1]
+                }
+            }
+
+            response_2 = {
+                'type': 'table_update',
+                'value': {
+                    'turn': self.turn + 1,
+                    'result': response_value_2,
+                    'opponent': self.answers[self.player_2['nick']][self.turn - 1]
+                }
+            }
+
+        self.player_1['responses'].append(response_2)
+        self.player_2['responses'].append(response_1)
 
         self.turn += 1
-
-

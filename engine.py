@@ -19,8 +19,8 @@ class Engine:
         self.tables = []
 
     def update(self):
-        print("Connected players: ", len(self.players), "current waiters: ", len(self.waiters), " current tables: ",
-              len(self.tables))
+        # print("Connected players: ", len(self.players), "current waiters: ", len(self.waiters), " current tables: ",
+              # len(self.tables))
 
         for player in self.players:
             commands = player['requests']
@@ -30,12 +30,8 @@ class Engine:
                                 'value': "Hi hi hello " + command['value'] + ", from server!"}
                     player['responses'].append(response)
 
-                elif command['type'] == 'colors_match':
-                    response = {
-                        'type': 'server_response',
-                        'value': command['value']
-                    }
-                    player['responses'].append(response)
+                elif command['type'] == 'picked_colors':
+                    player['table'].update(player, command['value'])
                 elif command['type'] == 'login':
                     response_value = self.add_unique_nick(player, command['value'])
 
