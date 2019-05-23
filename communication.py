@@ -21,7 +21,15 @@ class ComSupervisor:
     def accept(self, sock, mask):
         conn, addr = sock.accept()
 
-        player = {'conn': conn, 'addr': addr, 'requests': [], 'responses': [], 'nick': "", 'to_remove': False}
+        player = {
+            'conn': conn,
+            'addr': addr,
+            'requests': [],
+            'responses': [],
+            'nick': "",
+            'to_remove': False,
+            'table': None
+        }
 
         if not self.players_list_contains(player):
             conn.setblocking(False)
