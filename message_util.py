@@ -14,16 +14,16 @@ def recv_msg(conn):
     # Read message length and unpack it into an integer
     received, raw_msglen = recv_all(conn, 4)
     if not received and not raw_msglen:
-        return (False, None)
+        return False, None
 
     msglen = struct.unpack('>I', raw_msglen)[0]
 
     # Read the message data
     received, coded_data = recv_all(conn, msglen)
     if not received:
-        return (False, None)
+        return False, None
 
-    return (True, json.loads(coded_data, encoding='utf-8'))
+    return True, json.loads(coded_data, encoding='utf-8')
 
 
 def recv_all(conn, n):
@@ -37,4 +37,4 @@ def recv_all(conn, n):
         if not packet:
             return None
         data += packet
-    return (True, data)
+    return True, data

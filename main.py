@@ -16,4 +16,5 @@ if __name__ == '__main__':
             communication_module.fetch_events()
             game_engine.update()
             communication_module.send()
+            communication_module.clean()
             last_update = time.perf_counter()
