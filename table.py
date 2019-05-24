@@ -17,8 +17,9 @@ class Table:
 
         self.turn = 1
 
+        self.to_clean = False
+
     def set_up_code(self, player, code):
-        print(player)
         self.codes_cnt += 1
         self.codes[player['nick']] = code
 
@@ -32,6 +33,7 @@ class Table:
             self.player_2['responses'].append(response)
 
     def update(self, player, code):
+        #TODO cleaning table after 2 leaver
         if len(self.answers[player['nick']]) < self.turn:
             self.answers[player['nick']].append(code)
 
@@ -68,23 +70,34 @@ class Table:
                 response_value_2.append('white')
 
         if blacks_1 == 4 or blacks_2 == 4:
+            self.to_clean = True
             if blacks_1 == 4 and blacks_2 == 4:
                 response_1 = {
                     'type': 'game_over',
                     'value': {
                         'turn': self.turn + 1,
                         'result': response_value_1,
+                        'opponent': self.answers[self.player_1['nick']][self.turn - 1],
                         'outcome': 'withdraw'
                     }
                 }
 
-                response_2 = response_1
+                response_2 = {
+                    'type': 'game_over',
+                    'value': {
+                        'turn': self.turn + 1,
+                        'result': response_value_2,
+                        'opponent': self.answers[self.player_2['nick']][self.turn - 1],
+                        'outcome': 'withdraw'
+                    }
+                }
             elif blacks_1 == 4:
                 response_1 = {
                     'type': 'game_over',
                     'value': {
                         'turn': self.turn + 1,
                         'result': response_value_1,
+                        'opponent': self.answers[self.player_1['nick']][self.turn - 1],
                         'outcome': 'winner'
                     }
                 }
@@ -93,7 +106,8 @@ class Table:
                     'type': 'game_over',
                     'value': {
                         'turn': self.turn + 1,
-                        'result': response_value_1,
+                        'result': response_value_2,
+                        'opponent': self.answers[self.player_2['nick']][self.turn - 1],
                         'outcome': 'loser'
                     }
                 }
@@ -103,6 +117,7 @@ class Table:
                     'value': {
                         'turn': self.turn + 1,
                         'result': response_value_1,
+                        'opponent': self.answers[self.player_1['nick']][self.turn - 1],
                         'outcome': 'loser'
                     }
                 }
@@ -111,16 +126,19 @@ class Table:
                     'type': 'game_over',
                     'value': {
                         'turn': self.turn + 1,
-                        'result': response_value_1,
+                        'result': response_value_2,
+                        'opponent': self.answers[self.player_2['nick']][self.turn - 1],
                         'outcome': 'winner'
                     }
                 }
-        elif self.turn > 5:
+        elif self.turn >= 5:
+            self.to_clean = True
             response_1 = {
                 'type': 'game_over',
                 'value': {
                     'turn': self.turn + 1,
                     'result': response_value_1,
+                    'opponent': self.answers[self.player_1['nick']][self.turn - 1],
                     'outcome': 'loser'
                 }
             }
@@ -129,7 +147,8 @@ class Table:
                 'type': 'game_over',
                 'value': {
                     'turn': self.turn + 1,
-                    'result': response_value_1,
+                    'result': response_value_2,
+                    'opponent': self.answers[self.player_2['nick']][self.turn - 1],
                     'outcome': 'loser'
                 }
             }
@@ -156,3 +175,6 @@ class Table:
         self.player_2['responses'].append(response_1)
 
         self.turn += 1
+
+    def to_remove(self):
+        return self.to_clean

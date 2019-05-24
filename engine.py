@@ -19,8 +19,8 @@ class Engine:
         self.tables = []
 
     def update(self):
-        # print("Connected players: ", len(self.players), "current waiters: ", len(self.waiters), " current tables: ",
-              # len(self.tables))
+        print("Connected players: ", len(self.players), "current waiters: ", len(self.waiters), " current tables: ",
+              len(self.tables))
 
         for player in self.players:
             commands = player['requests']
@@ -35,14 +35,13 @@ class Engine:
                 elif command['type'] == 'login':
                     response_value = self.add_unique_nick(player, command['value'])
 
-                    if response_value:
-                        self.waiters.append(player)
-
                     response = {
                         'type': 'server_response',
                         'value': response_value
                     }
                     player['responses'].append(response)
+                elif command['type'] == 'join_waiters':
+                    self.waiters.append(player)
                 elif command['type'] == 'quit':
 
                     response = {
@@ -65,6 +64,11 @@ class Engine:
 
         self.find_pairs()
 
+        for table in self.tables:
+            if table.to_remove():
+                self.clean_up_table(table)
+                self.tables.remove(table)
+
     def find_pairs(self):
         while len(self.waiters) >= 2:
             table = Table(self.waiters[0], self.waiters[1])
@@ -77,6 +81,11 @@ class Engine:
             self.waiters[0]['table'] = table
             prepare_joined_table_message(self.waiters[0])
             self.waiters.remove(self.waiters[0])
+
+    def clean_up_table(self, table):
+        for player in self.players:
+            if player['table'] == table:
+                player['table'] = None
 
     def get_players(self):
         return self.players
