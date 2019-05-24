@@ -24,13 +24,24 @@ class Table:
         self.codes[player['nick']] = code
 
         if self.codes_cnt == 2:
-            response = {
+            response_1 = {
                 'type': 'start_game',
-                'value': True
+                'value': {
+                    'player_1': self.player_1['nick'],
+                    'player_2': self.player_2['nick']
+                }
             }
 
-            self.player_1['responses'].append(response)
-            self.player_2['responses'].append(response)
+            response_2 = {
+                'type': 'start_game',
+                'value': {
+                    'player_1': self.player_2['nick'],
+                    'player_2': self.player_1['nick']
+                }
+            }
+
+            self.player_1['responses'].append(response_1)
+            self.player_2['responses'].append(response_2)
 
     def update(self, player, code):
         #TODO cleaning table after 2 leaver
@@ -131,7 +142,7 @@ class Table:
                         'outcome': 'winner'
                     }
                 }
-        elif self.turn >= 5:
+        elif self.turn >= 8:
             self.to_clean = True
             response_1 = {
                 'type': 'game_over',
@@ -175,6 +186,21 @@ class Table:
         self.player_2['responses'].append(response_1)
 
         self.turn += 1
+
+    def inform(self, leaver):
+        response = {
+            'type': 'game_leaver',
+            'value': {
+                'outcome': 'winner'
+            }
+        }
+
+        if leaver == self.player_1:
+            self.player_2['responses'].append(response)
+        else:
+            self.player_1['responses'].append(response)
+
+        self.to_clean = True
 
     def to_remove(self):
         return self.to_clean

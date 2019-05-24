@@ -50,6 +50,13 @@ class Engine:
                     }
                     player['responses'].append(response)
                     player['to_remove'] = True
+
+                    if player['table']:
+                        player['table'].inform(player)
+
+                    if player in self.waiters:
+                        self.waiters.remove(player)
+
                 elif command['type'] == 'waiting_for_opponent':
                     self.waiters.append(player)
                     response = {
