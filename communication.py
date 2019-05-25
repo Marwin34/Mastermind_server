@@ -44,7 +44,9 @@ class ComSupervisor:
         if received and data:
             self.fetch_data(conn, data)
         elif not received:
-            self.remove_player(conn)
+            for player in self.players_container:
+                if player['conn'] == conn:
+                    player['to_remove'] = True
     # message_util.send_msg(conn, data)
 
     def send(self):
@@ -72,10 +74,7 @@ class ComSupervisor:
             if player['conn'] == conn:
                 player['requests'].append(data)
 
-    def remove_player(self, conn):
-        for key, value in enumerate(self.players_container):
-            if value['conn'] == conn:
-                self.players_container.remove(value)
+    def unregister(self, conn):
         self.selector.unregister(conn)
         conn.close()
 

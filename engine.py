@@ -51,12 +51,6 @@ class Engine:
                     player['responses'].append(response)
                     player['to_remove'] = True
 
-                    if player['table']:
-                        player['table'].inform(player)
-
-                    if player in self.waiters:
-                        self.waiters.remove(player)
-
                 elif command['type'] == 'waiting_for_opponent':
                     self.waiters.append(player)
                     response = {
@@ -88,6 +82,19 @@ class Engine:
             self.waiters[0]['table'] = table
             prepare_joined_table_message(self.waiters[0])
             self.waiters.remove(self.waiters[0])
+
+    def clean(self, comm_module):
+        for player in self.players:
+            if player['to_remove']:
+                if player['table']:
+                    player['table'].inform(player)
+
+                if player in self.waiters:
+                    self.waiters.remove(player)
+
+                self.players.remove(player)
+
+                comm_module.unregister(player['conn'])
 
     def clean_up_table(self, table):
         for player in self.players:
