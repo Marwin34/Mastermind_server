@@ -35,7 +35,7 @@ class ComSupervisor:
         if not self.players_list_contains(player):
             conn.setblocking(False)
             self.players_container.append(player)
-            print("Accepted", conn, "from", addr, "added", player)
+            print("Accepted", conn, "from", addr)
             self.selector.register(conn, selectors.EVENT_READ, self.read)
         else:
             print("Connection already accepted.")
