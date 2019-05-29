@@ -6,7 +6,7 @@ import time
 
 if __name__ == '__main__':
     game_engine = engine.Engine()
-    communication_module = communication.ComSupervisor("127.0.0.1", 50001, game_engine.get_players())
+    communication_module = communication.ComSupervisor(game_engine.get_players())
     time_stamp = 0.016  # 60 FPS
     last_update = 0
 

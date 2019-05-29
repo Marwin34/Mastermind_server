@@ -1,14 +1,15 @@
 import selectors
 import socket
 import message_util
+from conn_conf import conf_addr, conf_port
 
 
 class ComSupervisor:
-    def __init__(self, addr, port, players_container):
+    def __init__(self, players_container):
         self.selector = selectors.DefaultSelector()
 
-        self.port = port
-        self.addr = addr
+        self.port = conf_port
+        self.addr = conf_addr
         self.socket = socket.socket()
         self.socket.bind((self.addr, self.port))
         self.socket.listen(100)
