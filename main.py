@@ -10,6 +10,8 @@ if __name__ == '__main__':
     time_stamp = 0.016  # 60 FPS
     last_update = 0
 
+    print("Server started!")
+
     while True:
         if time.perf_counter() - last_update >= time_stamp:
             # print(1 / (time.perf_counter() - last_update))
