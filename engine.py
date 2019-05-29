@@ -19,9 +19,6 @@ class Engine:
         self.tables = []
 
     def update(self):
-        print("Connected players: ", len(self.players), "current waiters: ", len(self.waiters), " current tables: ",
-              len(self.tables))
-
         for player in self.players:
             commands = player['requests']
             for command in commands:
